@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Wiki Quiz Generator</title>
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1e40af;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+  margin: 0;
+  font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+  color: #0f172a;
+
+  background: linear-gradient(
+    -45deg,
+    #60a5fa,
+    #818cf8,
+    #34d399,
+    #22d3ee
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 18s ease infinite;
+}
+
+
+  @keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+    .container {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    p.subtitle {
+      color: var(--muted);
+      margin-bottom: 30px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    .tab-btn {
+      padding: 10px 18px;
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active,
+    .tab-btn:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* Sections */
+    .tab {
+      display: none;
+    }
+
+    .tab.active {
+      display: block;
+    }
+
+    /* Card */
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.04);
+      margin-bottom: 25px;
+    }
+
+    /* Inputs */
+    .input-group {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    input {
+      flex: 1;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 15px;
+    }
+
+    button.primary {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.2s ease;
+    }
+
+    button.primary:hover {
+      background: var(--primary-dark);
+    }
+
+    /* Quiz */
+    .question {
+      margin-bottom: 22px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .question h4 {
+      margin: 0 0 10px;
+    }
+
+    ul.options {
+      padding-left: 20px;
+      margin: 0;
+    }
+
+    ul.options li {
+      margin-bottom: 6px;
+    }
+
+    .meta {
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    tr:hover {
+      background: #f1f5f9;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,0.5);
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 40px;
+    }
+
+    .modal-content {
+      background: white;
+      width: 80%;
+      max-height: 85%;
+      overflow-y: auto;
+      border-radius: 14px;
+      padding: 28px;
+    }
+
+    .close-btn {
+      float: right;
+      cursor: pointer;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .close-btn:hover {
+      color: var(--text);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Wiki Quiz Generator</h1>
+    <p class="subtitle">Generate intelligent quizzes from any Wikipedia article</p>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showTab('generate', this)">Generate Quiz</button>
+      <button class="tab-btn" onclick="showTab('history', this)">Past Quizzes</button>
+    </div>
+
+    <!-- TAB 1 -->
+    <div id="generate" class="tab active">
+      <div class="card">
+        <div class="input-group">
+          <input id="url" placeholder="Paste Wikipedia article URL here" />
+          <button class="primary" onclick="generateQuiz()">Generate</button>
+        </div>
+        <div id="quizOutput"></div>
+      </div>
+    </div>
+
+    <!-- TAB 2 -->
+    <div id="history" class="tab">
+      <div class="card">
+        <button class="primary" onclick="loadHistory()">Load History</button>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Title</th>
+              <th>URL</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="historyTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div id="quizModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">✕ Close</span>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+<script>
+const API = "http://127.0.0.1:8000";
+
+function showTab(id, btn) {
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+}
+
+function generateQuiz() {
+  const url = document.getElementById("url").value;
+  fetch(`${API}/generate-quiz?url=${encodeURIComponent(url)}`, { method: "POST" })
+    .then(r => r.json())
+    .then(data => renderQuiz(data, "quizOutput"));
+}
+
+function renderQuiz(data, target) {
+  let html = `<h3>${data.title}</h3>`;
+  data.quiz.forEach((q, i) => {
+    html += `
+      <div class="question">
+        <h4>Q${i+1}. ${q.question}</h4>
+        <ul class="options">${q.options.map(o => `<li>${o}</li>`).join("")}</ul>
+        <div class="meta"><b>Answer:</b> ${q.answer}</div>
+        <div class="meta"><b>Difficulty:</b> ${q.difficulty}</div>
+        <div class="meta"><b>Explanation:</b> ${q.explanation}</div>
+      </div>`;
+  });
+  html += `<div class="meta"><b>Related Topics:</b> ${data.related_topics.join(", ")}</div>`;
+  document.getElementById(target).innerHTML = html;
+}
+
+function loadHistory() {
+  fetch(`${API}/history`)
+    .then(r => r.json())
+    .then(data => {
+      const table = document.getElementById("historyTable");
+      table.innerHTML = "";
+      data.forEach(a => {
+        table.innerHTML += `
+          <tr>
+            <td>${a.id}</td>
+            <td>${a.title}</td>
+            <td>${a.url}</td>
+            <td><button class="primary" onclick="openDetails(${a.id})">Details</button></td>
+          </tr>`;
+      });
+    });
+}
+
+function openDetails(id) {
+  fetch(`${API}/quiz/${id}`)
+    .then(r => r.json())
+    .then(data => {
+      renderQuiz(data, "modalContent");
+      document.getElementById("quizModal").style.display = "flex";
+    });
+}
+
+function closeModal() {
+  document.getElementById("quizModal").style.display = "none";
+}
+</script>
+</body>
+</html>

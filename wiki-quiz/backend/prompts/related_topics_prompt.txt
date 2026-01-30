@@ -1,0 +1,16 @@
+Based ONLY on the Wikipedia content below, suggest 5 related Wikipedia topics
+that the reader may explore next.
+
+RULES:
+- Topics must be real Wikipedia article titles.
+- No explanations.
+- No duplicates.
+
+Return ONLY valid JSON:
+
+{
+  "related_topics": ["Topic 1", "Topic 2", "Topic 3", "Topic 4", "Topic 5"]
+}
+
+CONTENT:
+{content}
